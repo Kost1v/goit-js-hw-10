@@ -6,44 +6,46 @@ const inputDelay = document.querySelector('.delay');
 const stanPromise = document.getElementsByName('state');
 let delay;
 
-function showAlert() {
+function showAlert(event) {
   event.preventDefault();
 
+  const delay = event.target.delay.value;
+  const stan = event.target.state.value;
+
   const promise = new Promise((resolve, reject) => {
-    for (let i = 0; i < stanPromise.length; i++) {
-      if (stanPromise[i].checked) {
-        resolve(
-          setTimeout(() => {
-            iziToast.success({
-              title: '',
-              message: `✅ Fulfilled promise in ${delay} ms`,
-              icon: '',
-              messageSize: '18',
-              position: 'topRight',
-              color: '#008000',
-            });
-          }, delay)
-        );
-        return;
+    setTimeout(() => {
+      if (stan === 'fulfilled') {
+        resolve(delay);
       } else {
-        reject(
-          setTimeout(() => {
-            iziToast.error({
-              title: '',
-              message: `❌ Rejected promise in ${delay} ms`,
-              icon: '',
-              messageSize: '18',
-              color: '#ff5232',
-              position: 'topRight',
-            });
-          }, delay)
-        );
-        return;
+        reject(delay);
       }
-    }
+    }, delay);
   });
-  form.reset();
+
+  promise
+    .then(delay => {
+      iziToast.success({
+        title: '',
+        message: `✅ Fulfilled promise in ${delay} ms`,
+        icon: '',
+        messageSize: '18',
+        position: 'topRight',
+        color: '#008000',
+      });
+    })
+    .catch(delay => {
+      iziToast.error({
+        title: '',
+        message: `❌ Rejected promise in ${delay} ms`,
+        icon: '',
+        messageSize: '18',
+        color: '#ff5232',
+        position: 'topRight',
+      });
+    }).finally(() => {
+      form.reset()
+    })
+  form.reset()
 }
 
-inputDelay.addEventListener('change', () => (delay = inputDelay.value));
 form.addEventListener('submit', showAlert);
